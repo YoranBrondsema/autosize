@@ -151,52 +151,54 @@
 			// Using mainly bare JS in this function because it is going
 			// to fire very often while typing, and needs to very efficient.
 			function adjust() {
-				var height, original;
-
-				if (mirrored !== ta) {
-					initMirror();
-				} else {
-					setWidth();
-				}
-
-				if (!ta.value && options.placeholder) {
-					// If the textarea is empty, copy the placeholder text into 
-					// the mirror control and use that for sizing so that we 
-					// don't end up with placeholder getting trimmed.
-					mirror.value = ($ta.attr("placeholder") || '') + options.append;
-				} else {
-					mirror.value = ta.value + options.append;
-				}
-
-				mirror.style.overflowY = ta.style.overflowY;
-				original = parseInt(ta.style.height,10);
-
-				// Setting scrollTop to zero is needed in IE8 and lower for the next step to be accurately applied
-				mirror.scrollTop = 0;
-
-				mirror.scrollTop = 9e4;
-
-				// Using scrollTop rather than scrollHeight because scrollHeight is non-standard and includes padding.
-				height = mirror.scrollTop;
-
-				if (maxHeight && height > maxHeight) {
-					ta.style.overflowY = 'scroll';
-					height = maxHeight;
-				} else {
-					ta.style.overflowY = 'hidden';
-					if (height < minHeight) {
-						height = minHeight;
+				Ember.run.scheduleOnce('afterRender', this, function() {
+					var height, original;
+	
+					if (mirrored !== ta) {
+						initMirror();
+					} else {
+						setWidth();
 					}
-				}
-
-				height += boxOffset;
-
-				if (original !== height) {
-					ta.style.height = height + 'px';
-					if (callback) {
-						options.callback.call(ta,ta);
+	
+					if (!ta.value && options.placeholder) {
+						// If the textarea is empty, copy the placeholder text into 
+						// the mirror control and use that for sizing so that we 
+						// don't end up with placeholder getting trimmed.
+						mirror.value = ($ta.attr("placeholder") || '') + options.append;
+					} else {
+						mirror.value = ta.value + options.append;
 					}
-				}
+	
+					mirror.style.overflowY = ta.style.overflowY;
+					original = parseInt(ta.style.height,10);
+	
+					// Setting scrollTop to zero is needed in IE8 and lower for the next step to be accurately applied
+					mirror.scrollTop = 0;
+	
+					mirror.scrollTop = 9e4;
+	
+					// Using scrollTop rather than scrollHeight because scrollHeight is non-standard and includes padding.
+					height = mirror.scrollTop;
+	
+					if (maxHeight && height > maxHeight) {
+						ta.style.overflowY = 'scroll';
+						height = maxHeight;
+					} else {
+						ta.style.overflowY = 'hidden';
+						if (height < minHeight) {
+							height = minHeight;
+						}
+					}
+	
+					height += boxOffset;
+	
+					if (original !== height) {
+						ta.style.height = height + 'px';
+						if (callback) {
+							options.callback.call(ta,ta);
+						}
+					}
+				});
 			}
 
 			function resize () {
